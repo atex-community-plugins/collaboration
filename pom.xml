@@ -1,0 +1,396 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <!-- artifact description -->
+
+  <name>Collaboration Plugin</name>
+
+  <description>
+    This plugin allow integration of mattermost or a slack compatible api.
+  </description>
+
+  <parent>
+    <groupId>com.polopoly</groupId>
+    <artifactId>public</artifactId>
+    <version>10.16.3-fp1</version>
+    <relativePath />
+  </parent>
+
+  <organization>
+    <name>Atex</name>
+    <url>http://www.atex.com</url>
+  </organization>
+
+  <!-- artifact definition -->
+
+  <groupId>com.atex.plugins</groupId>
+  <artifactId>collaboration</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <distributionManagement>
+    <repository>
+      <name>Polopoly PD Plugins</name>
+      <id>polopoly-pd-plugins</id>
+      <url>http://maven.polopoly.com/nexus/content/repositories/polopoly-pd-plugins</url>
+    </repository>
+    <snapshotRepository>
+      <name>Polopoly PD Plugins Snapshots</name>
+      <id>polopoly-pd-plugins-snapshots</id>
+      <url>http://maven.polopoly.com/nexus/content/repositories/polopoly-pd-plugins-snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+  <properties>
+    <polopoly.version>10.16.3-fp1</polopoly.version>
+    <baseline.version>4.0.6-SNAPSHOT</baseline.version>
+    <testnext.version>2.1.2</testnext.version>
+    <camel.version>2.13.2</camel.version>
+  </properties>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>polopoly-public</id>
+      <name>Polopoly Public</name>
+      <url>http://maven.polopoly.com/nexus/content/groups/polopoly-public</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <repositories>
+    <repository>
+      <id>polopoly-public</id>
+      <name>Polopoly Public</name>
+      <url>http://maven.polopoly.com/nexus/content/groups/polopoly-public</url>
+    </repository>
+    <repository>
+      <id>polopoly-plugins</id>
+      <name>Polopoly Plugins</name>
+      <url>http://maven.polopoly.com/nexus/content/groups/polopoly-plugins</url>
+    </repository>
+  </repositories>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.polopoly</groupId>
+      <artifactId>polopoly</artifactId>
+      <version>${polopoly.version}</version>
+      <classifier>api</classifier>
+      <type>jar</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.polopoly</groupId>
+      <artifactId>polopoly</artifactId>
+      <version>${polopoly.version}</version>
+      <type>jar</type>
+      <scope>runtime</scope>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>com.atex.plugins</groupId>
+      <artifactId>baseline</artifactId>
+      <version>${baseline.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.atex.plugins</groupId>
+      <artifactId>baseline</artifactId>
+      <version>${baseline.version}</version>
+      <classifier>contentdata</classifier>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-core</artifactId>
+      <version>${camel.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.polopoly</groupId>
+      <artifactId>camel-polopoly</artifactId>
+      <version>${polopoly.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-client</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-json</artifactId>
+    </dependency>
+
+    <!-- https://github.com/spullara/mustache.java -->
+    <dependency>
+      <groupId>com.github.spullara.mustache.java</groupId>
+      <artifactId>compiler</artifactId>
+      <version>0.9.2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+      <version>1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-ejb_2.1_spec</artifactId>
+      <version>1.0</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>1.9.5</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.polopoly</groupId>
+      <artifactId>testnext</artifactId>
+      <version>${testnext.version}</version>
+      <scope>test</scope>
+      <type>pom</type>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.5.1</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+          <encoding>UTF-8</encoding>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.9.1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>javadoc</goal>
+            </goals>
+            <phase>package</phase>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>p-maven-plugin</artifactId>
+        <groupId>com.polopoly.extensions</groupId>
+        <version>${polopoly.version}</version>
+        <configuration>
+          <generatePluginXml>true</generatePluginXml>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>process-aspect-annotation</goal>
+              <goal>pack</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>pack-content</id>
+            <goals>
+              <goal>dot-content-to-xml</goal>
+              <goal>pack</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <contentDataFileResources>
+                <files>
+                  <directory>${project.basedir}/src/main/contentfiles</directory>
+                  <includes>
+                    <include>**</include>
+                  </includes>
+                </files>
+              </contentDataFileResources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
+  </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>2.7</version>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>project-team</report>
+              <report>cim</report>
+              <report>issue-tracking</report>
+              <report>license</report>
+              <report>scm</report>
+              <report>summary</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.9.1</version>
+        <configuration>
+          <quiet>true</quiet>
+          <doctitle>${project.name} - API specification</doctitle>
+          <links>
+            <link>http://docs.oracle.com/javase/7/docs/api/</link>
+            <link>http://docs.oracle.com/javaee/1.4/api/</link>
+          </links>
+          <javadocVersion>1.8</javadocVersion>
+          <docfilessubdirs>true</docfilessubdirs>
+          <maxmemory>512m</maxmemory>
+        </configuration>
+      </plugin>
+
+      <!-- maven codehaus reports -->
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <version>3.0.1</version>
+        <configuration>
+          <xmlOutput>true</xmlOutput>
+          <threshhold>Medium</threshhold>
+          <xmlOutputDirectory>target/site</xmlOutputDirectory>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+        <version>2.7</version>
+        <configuration>
+          <formats>
+            <format>xml</format>
+            <format>html</format>
+          </formats>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.12</version>
+        <configuration>
+          <excludes>
+            <exclude>**/*IT.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-report-plugin</artifactId>
+        <version>2.14.1</version>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jxr-plugin</artifactId>
+        <version>2.3</version>
+        <configuration>
+          <linkXref>true</linkXref>
+          <javadocDir>site/apidocs</javadocDir>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>dashboard-maven-plugin</artifactId>
+        <version>1.0.0-beta-1</version>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>2.12.1</version>
+        <configuration>
+          <includeTestSourceDirectory>false</includeTestSourceDirectory>
+        </configuration>
+      </plugin>
+    </plugins>
+
+  </reporting>
+
+  <profiles>
+
+    <profile>
+      <id>deploy</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-site-plugin</artifactId>
+            <version>3.3</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>IT</id>
+      <activation>
+        <property>
+          <name>it</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <version>2.6</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>integration-test</goal>
+                  <goal>verify</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+  </profiles>
+</project>

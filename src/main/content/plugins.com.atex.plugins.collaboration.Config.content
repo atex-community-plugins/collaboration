@@ -1,0 +1,10 @@
+id:.
+major:appconfig
+inputtemplate:com.atex.plugins.collaboration.Configuration
+securityparent:p.siteengine.Configuration.d
+component:polopoly.Content:name:Collaboration Configuration
+component:enabled:value:false
+component:webHookUrl:value:http\://localhost\:8065/hooks/xxxx
+component:template:value:**{{headline}}** **{{id.contentId.contentIdString}}** _({{contentType}})_\n{{#description}}>{{description}}{{/description}}\n{{#tags}}#{{.}} {{/tags}}\n_{{url}}_\nPublished by `{{userCommitted}}` on {{published}}\nCreated by `{{userCreated}}` on {{created}}\nApproved by `{{userApproved}}` on {{approved}}
+component:defaultUsername:value:Polopoly
+component:defaultChannel:value:#town-square

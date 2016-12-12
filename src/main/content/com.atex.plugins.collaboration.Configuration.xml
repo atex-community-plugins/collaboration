@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<template-definition version="1.0" xmlns="http://www.polopoly.com/polopoly/cm/app/xml">
+  <input-template name="com.atex.plugins.collaboration.Configuration" label="com.atex.plugins.collaboration.Configuration">
+    <policy>com.atex.plugins.collaboration.CollaborationConfigPolicy</policy>
+    <editor>com.polopoly.plugin.OPluginConfigContextPolicyWidget</editor>
+    <viewer>com.polopoly.plugin.OPluginConfigContextPolicyWidget</viewer>
+
+    <type>AppConfig</type>
+
+    <param name="EditState_saveAndInsert">false</param>
+    <param name="EditState_saveAndView">true</param>
+    <param name="EditState_saveAndClose">false</param>
+    <param name="ViewState_insert">false</param>
+
+    <layout name="pages" input-template="p.AjaxPageMenu">
+
+      <layout name="general" input-template="p.Page" label="cm.general.General">
+
+        <field name="name" input-template="p.ContentName" label="cm.label.Name" required="true" />
+
+        <field name="enabled" input-template="p.Checkbox" label="com.atex.plugins.collaboration.Configuration.enabled.label">
+          <param name="checked">false</param>
+        </field>
+
+        <field name="webHookUrl" input-template="p.TextInput" label="com.atex.plugins.collaboration.Configuration.webhookUrl.label" />
+
+      </layout>
+
+      <layout name="defaultsPage" input-template="p.Page" label="com.atex.plugins.collaboration.Configuration.default.page.label">
+
+        <field name="defaultChannel" input-template="p.TextInput" label="com.atex.plugins.collaboration.Configuration.defaultChannel.label" />
+
+        <field name="defaultUsername" input-template="p.TextInput" label="com.atex.plugins.collaboration.Configuration.defaultUsername.label" />
+
+        <field name="allowedTypes" input-template="p.ContentTypeSelect" label="com.atex.plugins.collaboration.Configuration.allowedTypes.label">
+          <param name="multipleSelect">true</param>
+          <idparam name="rootContent">
+            <externalid>p.StandardResourceCategorization</externalid>
+          </idparam>
+        </field>
+
+        <field name="template" input-template="p.TextArea" label="com.atex.plugins.collaboration.Configuration.template.label">
+          <param name="fieldsetClass">heading</param>
+          <param name="fieldsetClass">field text</param>
+          <param name="rows">10</param>
+          <param name="cols">50</param>
+          <param name="tabIndex">2</param>
+        </field>
+
+        <field name="defaultPublishUpdates" input-template="p.Checkbox" label="com.atex.plugins.collaboration.Configuration.defaultPublishUpdates.label">
+          <param name="checked">false</param>
+        </field>
+
+      </layout>
+
+      <layout name="templatesPage" input-template="p.Page" label="com.atex.plugins.collaboration.Configuration.template.page.label">
+
+        <field name="templates" input-template="p.Duplicator" label="com.atex.plugins.collaboration.Configuration.templates.label">
+          <param name="startingCount">0</param>
+          <param name="minCount">0</param>
+          <param name="hasAddButton">true</param>
+          <param name="hasCloneButton">true</param>
+          <param name="hasSetCount">true</param>
+          <param name="isReorderEnabled">true</param>
+          <param name="hideable">true</param>
+          <param name="visible">true</param>
+
+          <layout name="templatesHGroup" input-template="p.HorizontalGroup" label="">
+            <field name="contentType" input-template="p.ContentTypeSelect" label="com.atex.plugins.collaboration.Configuration.contentType.label">
+              <param name="multipleSelect">true</param>
+              <idparam name="rootContent">
+                <externalid>p.StandardResourceCategorization</externalid>
+              </idparam>
+            </field>
+
+            <field name="template" input-template="p.TextArea" label="com.atex.plugins.collaboration.Configuration.template.label">
+              <param name="fieldsetClass">heading</param>
+              <param name="fieldsetClass">field text</param>
+              <param name="rows">10</param>
+              <param name="cols">50</param>
+              <param name="tabIndex">2</param>
+            </field>
+          </layout>
+
+        </field>
+      </layout>
+
+      <layout name="overridePage" input-template="p.Page" label="com.atex.plugins.collaboration.Configuration.override.page.label">
+
+        <field name="overrides" input-template="p.Duplicator" label="com.atex.plugins.collaboration.Configuration.overrides.label">
+          <param name="startingCount">0</param>
+          <param name="minCount">0</param>
+          <param name="hasAddButton">true</param>
+          <param name="hasCloneButton">true</param>
+          <param name="hasSetCount">true</param>
+          <param name="isReorderEnabled">true</param>
+          <param name="hideable">true</param>
+          <param name="visible">true</param>
+
+          <layout name="overridesCH" input-template="p.ColumnHolder">
+            <layout name="overridesC1" input-template="p.Column">
+
+              <field name="department" input-template="p.ContentTreeSelect" label="com.atex.plugins.collaboration.Configuration.department.label">
+                <idparam name="rootContent">
+                  <externalid>p.siteengine.Sites.d</externalid>
+                </idparam>
+                <param name="multipleSelect">true</param>
+                <param name="allowArticles">false</param>
+                <param name="allowDepartments">true</param>
+              </field>
+
+              <field name="enabled" input-template="p.Checkbox" label="com.atex.plugins.collaboration.Configuration.departmentEnabled.label">
+                <param name="checked">true</param>
+              </field>
+
+            </layout>
+            <layout name="overridesC2" input-template="p.Column">
+
+              <field name="channel" input-template="p.TextInput" label="com.atex.plugins.collaboration.Configuration.channel.label" />
+              <field name="username" input-template="p.TextInput" label="com.atex.plugins.collaboration.Configuration.username.label" />
+
+              <field name="publishUpdates" input-template="p.Select"
+                     label="com.atex.plugins.collaboration.Configuration.publishUpdates.label">
+                <param name="size">1</param>
+                <param name="selected">0</param>
+                <param name="multivalued">false</param>
+                <param name="label_0">com.atex.plugins.collaboration.Configuration.publishUpdates.inherit</param>
+                <param name="value_0">0</param>
+                <param name="label_1">com.atex.plugins.collaboration.Configuration.publishUpdates.true</param>
+                <param name="value_1">1</param>
+                <param name="label_2">com.atex.plugins.collaboration.Configuration.publishUpdates.false</param>
+                <param name="value_2">2</param>
+              </field>
+
+            </layout>
+            <layout name="overridesC3" input-template="p.Column">
+              <field name="allowedTypes" input-template="p.ContentTypeSelect" label="com.atex.plugins.collaboration.Configuration.allowedTypes.label">
+                <param name="multipleSelect">true</param>
+                <idparam name="rootContent">
+                  <externalid>p.StandardResourceCategorization</externalid>
+                </idparam>
+              </field>
+            </layout>
+
+          </layout>
+
+        </field>
+
+      </layout>
+
+    </layout>
+
+  </input-template>
+</template-definition>
