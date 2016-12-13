@@ -21,7 +21,7 @@ import com.atex.plugins.baseline.url.URLBuilder;
 import com.atex.plugins.baseline.url.URLBuilderCapabilities;
 import com.atex.plugins.baseline.url.URLBuilderLoader;
 import com.atex.plugins.collaboration.data.CollaborationConfig;
-import com.atex.plugins.collaboration.data.CollaborationConfig.CollaborationData;
+import com.atex.plugins.collaboration.data.CollaborationData;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.polopoly.application.Application;
