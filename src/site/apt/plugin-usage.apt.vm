@@ -1,0 +1,61 @@
+Usage
+
+* Site Alias
+
+  Make sure you configure site alias. See {{{./site-alias.html}Site Alias}}.
+
+* Configuration
+
+** General
+
+  From the collaboration plugin configuration tick the <<<Enabled>>> checkbox and fill in the webhook url.\
+  See {{{./slack.html}Slack}} or {{{./mattermost.html}MatterMost}} guides to know how to generate the webhook.
+
+[images/config-general.png]
+
+** Defaults
+
+  You can configure:
+
+  * the default channel that will be used
+
+  * the default username what will post the message
+
+  * the allowed types, if nothing is selected, everything will be published
+
+  * the template used for the message
+
+  * the checkbox that allow you to choose if updates will be published
+
+  []
+
+[images/config-defaults.png]
+
+** Templates
+
+  In this page you can configure a specific template for a specific content type.
+  If there is not a specific setting for a content type the default one will be used.
+
+[images/config-templates.png]
+
+** Overrides
+
+  In this page you can configure a specific behaviour for a site/page and its children.
+
+  You can choose:
+
+  * the page from where the rule will apply
+
+  * If <<<Enabled>>> is unchecked, no messages will be sent
+
+  * the channel (if empty the default channel will be used)
+
+  * the username (if empty the default username will be used)
+
+  * if updates will be published
+
+  * the allowed types (if empty the default allowed types will be used)
+
+  []
+
+[images/config-overrides.png]

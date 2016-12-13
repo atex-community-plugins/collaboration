@@ -1,0 +1,9 @@
+Slack
+
+* Configure incoming webhook
+
+  To be able to publish messages to slack you will need to setup an incoming webhook, you will need
+  to visit the page {{https://my.slack.com/services/new/incoming-webhook/}} and follow the online
+  instructions to generate the url, the url will looks like this:
+
+  {{https://hooks.slack.com/services/XXXXX/YYYYY/ZZZZZZZZZZ}}

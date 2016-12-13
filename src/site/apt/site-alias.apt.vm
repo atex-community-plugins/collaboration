@@ -1,0 +1,29 @@
+Site Alias Configuration
+
+  When content (like articles) are posted to the messaging platform, we will need to post also the
+  content url, so it is better to setup the site alias.
+
+  [[1]]
+
+    Login into Polopoly CM GUI, go to
+
+    <YOUR-SITE> > Advanced > Site aliases
+
+    Click on the <Edit> button.
+
+[images/site-alias-config-01.png]
+
+
+  [[2]]
+
+    Click on the <New> button, enter <Alias> URL, then click on the <Ok> button.
+
+[images/site-alias-config-02.png]
+
+
+  [[3]]
+
+    Finally, click on the <Save & Close> or <Save & View> button to complete the changes.
+    Please ensure the Site Alias URL is set as an main alias.
+
+[images/site-alias-config-03.png]

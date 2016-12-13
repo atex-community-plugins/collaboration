@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Collaboration Plugin">
+  <bannerLeft>
+    <name>${project.name}</name>
+  </bannerLeft>
+  <skin>
+    <groupId>org.apache.maven.skins</groupId>
+    <artifactId>maven-fluido-skin</artifactId>
+    <version>1.3.1</version>
+  </skin>
+  <body>
+    <menu name="The plugin">
+      <item name="Overview" href="index.html" />
+      <item name="Usage" href="plugin-usage.html" />
+    </menu>
+
+    <menu name="Configuration">
+      <item name="Configuration" href="plugin-config.html" />
+      <item name="Site alias" href="site-alias.html" />
+      <item name="Slack" href="slack.html" />
+      <item name="Mattermost" href="mattermost.html" />
+    </menu>
+
+    <menu name="Documentation">
+      <item name="JavaDocs" href="apidocs/index.html" />
+    </menu>
+
+    <menu name="Test Reports">
+      <item name="Test results" href="surefire-report.html" />
+      <item name="Test coverage" href="cobertura/index.html" />
+      <item name="Findbugs result" href="findbugs.html" />
+    </menu>
+
+    <menu name="Detailed Project Information" ref="reports"/>
+  </body>
+</project>

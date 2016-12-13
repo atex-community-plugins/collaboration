@@ -1,0 +1,104 @@
+Installation
+
+  There are 2 types of installation, using as binary plugin and source plugin.
+  With binary plugin, you can directly plug & use. If you wish to do customisation, you can use as source plugin
+
+* Using binary plugin
+
+  Edit $PROJECT/pom.xml and make sure the following is present:
+
++-------------------------------+
+<project>
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>${project.artifactId}</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>${project.artifactId}</artifactId>
+            <version>${project.version}</version>
+            <classifier>contentdata</classifier>
+        </dependency>
+    </dependencies>
+</project>
++-------------------------------+
+
+* Using source plugin
+
+  [[1]] Copy or link your plugin into the project you wish to use.
+
+  [[2]] Edit $PROJECT/pom.xml and make sure the following is present:
+
++-------------------------------+
+<project>
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>${project.artifactId}</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+    <modules>
+        <module>${project.artifactId}</module>
+    </modules>
+</project>
++-------------------------------+
+
+* Running the project and plugin combination
+
+  You should now be able to run the project (with your plugin in it) using:
+
+  <mvn p:run>
+
+  Login to CM GUI, you should able to see ${project.artifactId} installed.
+
+[images/configuration.png]
+
+* Integration Server configuration
+
+  You'll need to setup a JMS events flow in the integration server configuration.
+  Make sure that in the server-integration/pom.xml you have:
+
++------------------------------------------------------------------+
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jboss-client-libraries</artifactId>
+      <version>4.0.5</version>
+      <type>pom</type>
+      <exclusions>
+        <exclusion>
+          <groupId>jboss</groupId>
+          <artifactId>concurrent</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
++------------------------------------------------------------------+
+
+  Then in server-integration/config/dev/applicationContext.xml you need to enable the JMS flow:
+
++------------------------------------------------------------------+
+  <bean id="jbossmq" class="org.apache.camel.component.jms.JmsComponent">
+    <property name="connectionFactory" ref="jbossConnectionFactory"/>
+  </bean>
+
+  <jee:jndi-lookup id="jbossConnectionFactory" jndi-name="ConnectionFactory">
+    <jee:environment>
+      java.naming.provider.url=jnp://${jboss.hostname}:${jboss.naming.port}
+      java.naming.factory.initial=org.jboss.naming.NamingContextFactory
+    </jee:environment>
+  </jee:jndi-lookup>
+
+  <bean id="contentEventProcessor" class="com.atex.plugins.collaboration.ContentEventProcessor"/>
++------------------------------------------------------------------+
+
+  and then setup the route:
+
++------------------------------------------------------------------+
+    <route>
+      <from uri="jbossmq:topic:jms/PolopolyTopic" />
+      <process ref="contentEventProcessor" />
+    </route>
++------------------------------------------------------------------+

@@ -1,0 +1,9 @@
+Mattermost
+
+* Configure incoming webhook
+
+  To be able to publish messages to mattermost you will need to setup an incoming webhook, you will need
+  to go to the integrations page {{http://localhost:8065/team/integrations/incoming_webhooks}} and click
+  on "Add Incoming webhook" button to generate the url, the url will looks like this:
+
+  {{http://localhost:8065/hooks/xxxxxxxx}}
