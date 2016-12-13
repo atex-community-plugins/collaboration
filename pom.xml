@@ -29,18 +29,11 @@
   <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <distributionManagement>
-    <repository>
-      <name>Polopoly PD Plugins</name>
-      <id>polopoly-pd-plugins</id>
-      <url>http://maven.polopoly.com/nexus/content/repositories/polopoly-pd-plugins</url>
-    </repository>
-    <snapshotRepository>
-      <name>Polopoly PD Plugins Snapshots</name>
-      <id>polopoly-pd-plugins-snapshots</id>
-      <url>http://maven.polopoly.com/nexus/content/repositories/polopoly-pd-plugins-snapshots</url>
-    </snapshotRepository>
-  </distributionManagement>
+  <scm>
+    <developerConnection>scm:git:git@github.com:atex-community-plugins/collaboration.git</developerConnection>
+    <url>https://github.com/atex-community-plugins/collaboration</url>
+    <tag>HEAD</tag>
+  </scm>
 
   <properties>
     <polopoly.version>10.16.3-fp1</polopoly.version>
@@ -67,6 +60,11 @@
       <id>polopoly-plugins</id>
       <name>Polopoly Plugins</name>
       <url>http://maven.polopoly.com/nexus/content/groups/polopoly-plugins</url>
+    </repository>
+    <repository>
+      <id>polopoly-pd-plugins</id>
+      <name>Polopoly PD Plugins</name>
+      <url>http://maven.polopoly.com/nexus/content/repositories/polopoly-pd-plugins</url>
     </repository>
   </repositories>
 
@@ -183,6 +181,24 @@
           <target>1.8</target>
           <encoding>UTF-8</encoding>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>2.1.2</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+            <configuration>
+              <attach>true</attach>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
 
       <plugin>
@@ -348,6 +364,20 @@
 
     <profile>
       <id>deploy</id>
+
+      <distributionManagement>
+        <repository>
+          <name>Polopoly PD Plugins</name>
+          <id>polopoly-pd-plugins</id>
+          <url>http://maven.polopoly.com/nexus/content/repositories/polopoly-pd-plugins</url>
+        </repository>
+        <snapshotRepository>
+          <name>Polopoly PD Plugins Snapshots</name>
+          <id>polopoly-pd-plugins-snapshots</id>
+          <url>http://maven.polopoly.com/nexus/content/repositories/polopoly-pd-plugins-snapshots</url>
+        </snapshotRepository>
+      </distributionManagement>
+
       <build>
         <plugins>
           <plugin>
