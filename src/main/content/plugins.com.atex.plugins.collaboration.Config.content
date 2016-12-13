@@ -8,3 +8,5 @@ component:webHookUrl:value:http\://localhost\:8065/hooks/xxxx
 component:template:value:**{{headline}}** **{{id.contentId.contentIdString}}** _({{contentType}})_\n{{#description}}>{{description}}{{/description}}\n{{#tags}}#{{.}} {{/tags}}\n_{{url}}_\nPublished by `{{userCommitted}}` on {{published}}\nCreated by `{{userCreated}}` on {{created}}\nApproved by `{{userApproved}}` on {{approved}}
 component:defaultUsername:value:Polopoly
 component:defaultChannel:value:#town-square
+ref:allowedTypes:reference_parent0:p.templatecategory.standardarticle
+ref:allowedTypes:reference0:standard.Article
