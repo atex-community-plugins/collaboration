@@ -7,6 +7,7 @@ import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,8 +16,15 @@ import javax.ejb.CreateException;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 
+import com.atex.onecms.content.Content;
+import com.atex.onecms.content.ContentId;
 import com.atex.onecms.content.ContentManager;
+import com.atex.onecms.content.ContentResult;
+import com.atex.onecms.content.ContentVersionId;
+import com.atex.onecms.content.IdUtil;
 import com.atex.onecms.content.RepositoryClient;
+import com.atex.onecms.content.Subject;
+import com.atex.onecms.content.aspects.Aspect;
 import com.atex.plugins.baseline.url.URLBuilder;
 import com.atex.plugins.baseline.url.URLBuilderCapabilities;
 import com.atex.plugins.baseline.url.URLBuilderLoader;
@@ -24,6 +32,7 @@ import com.atex.plugins.collaboration.data.CollaborationConfig;
 import com.atex.plugins.collaboration.data.CollaborationData;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.polopoly.application.Application;
 import com.polopoly.application.IllegalApplicationStateException;
 import com.polopoly.cm.PublishingDateTime;
@@ -63,6 +72,7 @@ public class ContentEventProcessor implements Processor {
             return new SimpleDateFormat("yyyy-MM-dd HH:mm");
         }
     };
+    private static final Subject SYSTEM_SUBJECT = new Subject("98", null);
 
     final TemplateService service = new TemplateServiceImpl();
 
@@ -153,7 +163,8 @@ public class ContentEventProcessor implements Processor {
                         if (!Strings.isNullOrEmpty(configData.getUsername())) {
                             message.setUsername(configData.getUsername());
                         }
-                        message.setText(getText(bean, configData.getTemplate()));
+
+                        message.setText(getText(bean, getContentResult(policy), configData.getTemplate()));
 
                         webClient.publish(message);
                     }
@@ -168,6 +179,17 @@ public class ContentEventProcessor implements Processor {
         }
     }
 
+    private ContentResult<Object> getContentResult(final ContentPolicy policy) {
+        try {
+            final ContentId id = IdUtil.fromPolicyContentId(policy.getContentId());
+            final ContentVersionId vid = contentManager.resolve(id, SYSTEM_SUBJECT);
+            return contentManager.get(vid, null, SYSTEM_SUBJECT);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+        }
+        return null;
+    }
+
     private String getUserById(final UserId userId) throws CMException {
         try {
             final User user = userServer.getUserByUserId(userId);
@@ -177,14 +199,23 @@ public class ContentEventProcessor implements Processor {
         }
     }
 
-    private String getText(final ContentBean bean, final String template) throws CMException {
-        try {
-
-            try (final Reader reader = new StringReader(template)){
-                return service.execute(reader, new Object[] {
-                        bean
-                });
+    private String getText(final ContentBean bean, final ContentResult<Object> result, final String template) throws CMException {
+        try (final Reader reader = new StringReader(template)) {
+            final List<Object> objects = Lists.newArrayList(bean);
+            if (result != null && result.getStatus().isSuccess()) {
+                final Content<Object> content = result.getContent();
+                if (content != null) {
+                    final Map<String, Object> map = Maps.newHashMap();
+                    map.put("contentData", content.getContentData());
+                    for (final Aspect aspect : content.getAspects()) {
+                        if (aspect != null) {
+                            map.put(aspect.getName(), aspect.getData());
+                        }
+                    }
+                    objects.add(map);
+                }
             }
+            return service.execute(reader, objects.toArray(new Object[objects.size()]));
         } catch (IOException e) {
             throw new CMException(e);
         }
