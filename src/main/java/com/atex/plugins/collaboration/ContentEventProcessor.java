@@ -8,6 +8,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,14 +42,21 @@ import com.polopoly.cm.VersionedContentId;
 import com.polopoly.cm.WorkflowInfo;
 import com.polopoly.cm.client.CMException;
 import com.polopoly.cm.client.CmClient;
+import com.polopoly.cm.client.WorkflowAware;
+import com.polopoly.cm.event.CommitEvent;
 import com.polopoly.cm.event.TagEvent;
 import com.polopoly.cm.policy.ContentPolicy;
+import com.polopoly.cm.policy.Policy;
 import com.polopoly.cm.policy.PolicyCMServer;
+import com.polopoly.cm.workflow.WorkflowState;
 import com.polopoly.integration.IntegrationServerApplication;
 import com.polopoly.metadata.Dimension;
 import com.polopoly.metadata.Entity;
 import com.polopoly.metadata.Metadata;
 import com.polopoly.metadata.MetadataAware;
+import com.polopoly.siteengine.resource.Resources;
+import com.polopoly.siteengine.structure.ParentPathResolver;
+import com.polopoly.siteengine.structure.Site;
 import com.polopoly.user.server.User;
 import com.polopoly.user.server.UserId;
 import com.polopoly.user.server.UserServer;
@@ -99,7 +107,51 @@ public class ContentEventProcessor implements Processor {
 
                 final WebClientUtils webClient = new WebClientUtils(config.getWebHookUrl());
                 postUpdate(webClient, event, config);
+            } else if (body instanceof CommitEvent) {
+                final CommitEvent event = (CommitEvent) body;
+
+                final WebClientUtils webClient = new WebClientUtils(config.getWebHookUrl());
+                postApproval(webClient, event, config);
             }
+        }
+    }
+
+    private void postApproval(final WebClientUtils webClient, final CommitEvent event, final CollaborationConfigPolicy config) {
+        try {
+            final ContentPolicy policy = (ContentPolicy) cmServer.getPolicy(event.getContentId().getContentId());
+            final CollaborationData configData = new CollaborationConfig(config).getData(policy);
+            if (!Strings.isNullOrEmpty(configData.getTemplate())) {
+                final String contentType = policy.getInputTemplate().getExternalId().getExternalId();
+                if (configData.isEnabled()) {
+                    final WorkflowInfo workflowInfo = policy.getWorkflowInfo();
+                    if ((workflowInfo != null) && !workflowInfo.isWorkflowApproved()) {
+                        final WorkflowAware workflowAware = (WorkflowAware) policy.getChildPolicy("workflowAction");
+                        final WorkflowState state = workflowAware.getWorkflowState();
+
+                        final ContentBean bean = createContentBean(policy);
+
+                        String contentState = null;
+                        if (state.getLabel() != null) {
+                            final Resources resources = getResourceFromPolicy(policy);
+                            if (resources != null) {
+                                contentState = Objects.toString(resources.getStrings().get(state.getLabel()));
+                            }
+                        }
+                        if (Strings.isNullOrEmpty(contentState)) {
+                            contentState = state.getName();
+                        }
+                        bean.setContentState(contentState);
+                        final MessagePayload message = createMessagePayload(bean, policy, configData);
+
+                        webClient.publish(message);
+                    }
+                } else {
+                    LOGGER.log(Level.FINE, "content type " + contentType + " is not allowed");
+                }
+            }
+
+        } catch (CMException e) {
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
@@ -109,66 +161,20 @@ public class ContentEventProcessor implements Processor {
 
     private void postUpdate(final WebClientUtils webClient, final TagEvent event, final CollaborationConfigPolicy config) throws CMException {
         try {
-            final ContentPolicy policy = (ContentPolicy) cmServer.getPolicy(event.getContentId());
+            final ContentPolicy policy = (ContentPolicy) cmServer.getPolicy(event.getContentId().getContentId());
             final CollaborationData configData = new CollaborationConfig(config).getData(policy);
             if (!Strings.isNullOrEmpty(configData.getTemplate())) {
-                final String contentType = policy.getInputTemplate().getExternalId().getExternalId();
                 if (configData.isEnabled()) {
 
                     if (configData.isPublishUpdates() || isNew(event)) {
 
-                        final VersionInfo versionInfo = policy.getVersionInfo();
-                        final ContentBean bean = new ContentBean();
-                        bean.setId(event.getContentId());
-                        bean.setHeadline(policy.getName());
-                        bean.setContentType(contentType);
-                        bean.setByline(getUserById(versionInfo.getCommittedBy()));
-                        bean.setUrl(urlBuilder.buildUrl(event.getContentId()));
-                        bean.setCreated(DATE_FORMAT.get().format(policy.getContentCreationTime()));
-                        bean.setUserCreated(getUserById(policy.getCreatedBy()));
-                        bean.setUserCommitted(getUserById(versionInfo.getCommittedBy()));
-
-                        final long publishingTime;
-                        if (policy instanceof PublishingDateTime) {
-                            publishingTime = ((PublishingDateTime) policy).getPublishingDateTime();
-                        } else {
-                            publishingTime = versionInfo.getVersionCommitDate().getTime();
-                        }
-                        bean.setPublished(DATE_FORMAT.get().format(publishingTime));
-
-                        final WorkflowInfo workflowInfo = policy.getWorkflowInfo();
-                        if (workflowInfo != null) {
-                            bean.setApproved(DATE_FORMAT.get().format(workflowInfo.getVersionApproveDate()));
-                            bean.setUserApproved(getUserById(workflowInfo.getApprovedBy()));
-                        }
-
-                        if (policy instanceof MetadataAware) {
-                            final Metadata metadata = ((MetadataAware) policy).getMetadata();
-                            if (metadata != null) {
-                                final Dimension tagDimension = metadata.getDimensionById("dimension.Tag");
-                                if (tagDimension != null && tagDimension.getEntities().size() > 0) {
-                                    final List<String> tags = Lists.newArrayList();
-                                    for (final Entity entity : tagDimension.getEntities()) {
-                                        tags.add(entity.getName());
-                                    }
-                                    bean.setTags(tags);
-                                }
-                            }
-                        }
-
-                        final MessagePayload message = new MessagePayload();
-                        if (!Strings.isNullOrEmpty(configData.getChannel())) {
-                            message.setChannel(configData.getChannel());
-                        }
-                        if (!Strings.isNullOrEmpty(configData.getUsername())) {
-                            message.setUsername(configData.getUsername());
-                        }
-
-                        message.setText(getText(bean, getContentResult(policy), configData.getTemplate()));
+                        final ContentBean bean = createContentBean(policy);
+                        final MessagePayload message = createMessagePayload(bean, policy, configData);
 
                         webClient.publish(message);
                     }
                 } else {
+                    final String contentType = policy.getInputTemplate().getExternalId().getExternalId();
                     LOGGER.log(Level.FINE, "content type " + contentType + " is not allowed");
                 }
             } else {
@@ -177,6 +183,67 @@ public class ContentEventProcessor implements Processor {
         } catch (CMException e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
+    }
+
+    private MessagePayload createMessagePayload(final ContentBean bean, final ContentPolicy policy, final CollaborationData configData)
+            throws CMException {
+
+        final MessagePayload message = new MessagePayload();
+        if (!Strings.isNullOrEmpty(configData.getChannel())) {
+            message.setChannel(configData.getChannel());
+        }
+        if (!Strings.isNullOrEmpty(configData.getUsername())) {
+            message.setUsername(configData.getUsername());
+        }
+
+        message.setText(getText(bean, getContentResult(policy), configData.getTemplate()));
+        return message;
+    }
+
+    private ContentBean createContentBean(final ContentPolicy policy) throws CMException {
+        final String contentType = policy.getInputTemplate().getExternalId().getExternalId();
+        final com.polopoly.cm.ContentId contentId = policy.getContentId().getContentId();
+        final VersionInfo versionInfo = policy.getVersionInfo();
+        final ContentBean bean = new ContentBean();
+        bean.setId(contentId);
+        bean.setHeadline(policy.getName());
+        bean.setContentType(contentType);
+        bean.setByline(getUserById(versionInfo.getCommittedBy()));
+        bean.setUrl(urlBuilder.buildUrl(contentId));
+        bean.setCreated(DATE_FORMAT.get().format(policy.getContentCreationTime()));
+        bean.setUserCreated(getUserById(policy.getCreatedBy()));
+        bean.setUserCommitted(getUserById(versionInfo.getCommittedBy()));
+
+        final long publishingTime;
+        if (policy instanceof PublishingDateTime) {
+            publishingTime = ((PublishingDateTime) policy).getPublishingDateTime();
+        } else {
+            publishingTime = versionInfo.getVersionCommitDate().getTime();
+        }
+        bean.setPublished(DATE_FORMAT.get().format(publishingTime));
+
+        final WorkflowInfo workflowInfo = policy.getWorkflowInfo();
+        if (workflowInfo != null) {
+            if (workflowInfo.getVersionApproveDate() != null) {
+                bean.setApproved(DATE_FORMAT.get().format(workflowInfo.getVersionApproveDate()));
+            }
+            bean.setUserApproved(getUserById(workflowInfo.getApprovedBy()));
+        }
+
+        if (policy instanceof MetadataAware) {
+            final Metadata metadata = ((MetadataAware) policy).getMetadata();
+            if (metadata != null) {
+                final Dimension tagDimension = metadata.getDimensionById("dimension.Tag");
+                if (tagDimension != null && tagDimension.getEntities().size() > 0) {
+                    final List<String> tags = Lists.newArrayList();
+                    for (final Entity entity : tagDimension.getEntities()) {
+                        tags.add(entity.getName());
+                    }
+                    bean.setTags(tags);
+                }
+            }
+        }
+        return bean;
     }
 
     private ContentResult<Object> getContentResult(final ContentPolicy policy) {
@@ -191,12 +258,15 @@ public class ContentEventProcessor implements Processor {
     }
 
     private String getUserById(final UserId userId) throws CMException {
-        try {
-            final User user = userServer.getUserByUserId(userId);
-            return user.getLoginName();
-        } catch (CreateException | RemoteException e) {
-            throw new CMException(e);
+        if (userId != null) {
+            try {
+                final User user = userServer.getUserByUserId(userId);
+                return user.getLoginName();
+            } catch (CreateException | RemoteException e) {
+                throw new CMException(e);
+            }
         }
+        return null;
     }
 
     private String getText(final ContentBean bean, final ContentResult<Object> result, final String template) throws CMException {
@@ -219,6 +289,19 @@ public class ContentEventProcessor implements Processor {
         } catch (IOException e) {
             throw new CMException(e);
         }
+    }
+
+    private Resources getResourceFromPolicy(final ContentPolicy policy) throws CMException {
+        final List<com.polopoly.cm.ContentId> ids = new ParentPathResolver().getParentPathAsList(policy, policy.getCMServer());
+        if (ids != null) {
+            for (int idx = ids.size() - 1; idx >= 0; idx--) {
+                final Policy parentPolicy = policy.getCMServer().getPolicy(ids.get(idx));
+                if (parentPolicy instanceof Site) {
+                    return ((Site) parentPolicy).getResources();
+                }
+            }
+        }
+        return null;
     }
 
     private void init() {

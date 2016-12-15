@@ -5,7 +5,7 @@ securityparent:p.siteengine.Configuration.d
 component:polopoly.Content:name:Collaboration Configuration
 component:enabled:value:false
 component:webHookUrl:value:http\://localhost\:8065/hooks/xxxx
-component:template:value:**{{headline}}** **{{id.contentId.contentIdString}}** _({{contentType}})_\n{{#description}}>{{description}}{{/description}}\n{{#tags}}#{{.}} {{/tags}}\n_{{url}}_\nPublished by `{{userCommitted}}` on {{published}}\nCreated by `{{userCreated}}` on {{created}}\nApproved by `{{userApproved}}` on {{approved}}
+component:template:value:**{{headline}}** _(**{{id.contentId.contentIdString}}**)_ _({{contentType}})_ {{#contentData}}{{#priority}}[{{.}}]{{/priority}}{{/contentData}} {{#contentState}}`{{.}}`{{/contentState}}\n{{#contentData}}{{#lead}}>{{.}}\n \n{{/lead}}{{/contentData}}\n{{#tags}}#{{.}} {{/tags}}\n_{{url}}_\nPublished by `{{userCommitted}}` on {{published}}\nCreated by `{{userCreated}}` on {{created}}\n{{#userApproved}}Approved by `{{userApproved}}` on {{approved}}{{/userApproved}}
 component:defaultUsername:value:Polopoly
 component:defaultChannel:value:#town-square
 ref:allowedTypes:reference_parent0:p.templatecategory.standardarticle

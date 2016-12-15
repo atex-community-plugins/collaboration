@@ -1,0 +1,9 @@
+id:localizedstrings.english
+major:1
+inputtemplate:p.siteengine.LocalizedStrings
+component:localizedstrings:workflow.state.Draft:Draft
+component:localizedstrings:workflow.state.NeedApprove:Need approval
+component:localizedstrings:workflow.state.Public:Public
+component:localizedstrings:workflow.state.Approved:Approved
+component:localizedstrings:workflow.state.Removed:Removed
+component:localizedstrings:workflow.state.Internal:Internal

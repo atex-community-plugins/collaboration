@@ -13,7 +13,6 @@ public class ContentBean {
     private ContentId id;
     private String contentType;
     private String headline;
-    private String description;
     private String byline;
     private String url;
     private String created;
@@ -22,6 +21,7 @@ public class ContentBean {
     private String userCreated;
     private String userCommitted;
     private String userApproved;
+    private String contentState;
     private List<String> tags;
 
     public ContentId getId() {
@@ -46,14 +46,6 @@ public class ContentBean {
 
     public void setHeadline(final String headline) {
         this.headline = headline;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(final String description) {
-        this.description = description;
     }
 
     public String getByline() {
@@ -118,6 +110,14 @@ public class ContentBean {
 
     public void setUserApproved(final String userApproved) {
         this.userApproved = userApproved;
+    }
+
+    public String getContentState() {
+        return contentState;
+    }
+
+    public void setContentState(final String contentState) {
+        this.contentState = contentState;
     }
 
     public List<String> getTags() {
