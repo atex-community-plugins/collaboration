@@ -31,6 +31,8 @@ import com.atex.plugins.baseline.url.URLBuilderCapabilities;
 import com.atex.plugins.baseline.url.URLBuilderLoader;
 import com.atex.plugins.collaboration.data.CollaborationConfig;
 import com.atex.plugins.collaboration.data.CollaborationData;
+import com.atex.plugins.template.TemplateService;
+import com.atex.plugins.template.TemplateServiceBuilder;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -82,7 +84,7 @@ public class ContentEventProcessor implements Processor {
     };
     private static final Subject SYSTEM_SUBJECT = new Subject("98", null);
 
-    final TemplateService service = new TemplateServiceImpl();
+    final TemplateService service = new TemplateServiceBuilder().create();
 
     private PolicyCMServer cmServer;
     private UserServer userServer;
