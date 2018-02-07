@@ -29,6 +29,7 @@ import com.atex.onecms.content.aspects.Aspect;
 import com.atex.plugins.baseline.url.URLBuilder;
 import com.atex.plugins.baseline.url.URLBuilderCapabilities;
 import com.atex.plugins.baseline.url.URLBuilderLoader;
+import com.atex.plugins.baseline.util.WebClientUtils;
 import com.atex.plugins.collaboration.data.CollaborationConfig;
 import com.atex.plugins.collaboration.data.CollaborationData;
 import com.atex.plugins.template.TemplateService;
@@ -107,18 +108,18 @@ public class ContentEventProcessor implements Processor {
             if (body instanceof TagEvent) {
                 final TagEvent event = (TagEvent) body;
 
-                final WebClientUtils webClient = new WebClientUtils(config.getWebHookUrl());
+                final WebClientUtils<MessagePayload> webClient = new WebClientUtils<MessagePayload>(config.getWebHookUrl());
                 postUpdate(webClient, event, config);
             } else if (body instanceof CommitEvent) {
                 final CommitEvent event = (CommitEvent) body;
 
-                final WebClientUtils webClient = new WebClientUtils(config.getWebHookUrl());
+                final WebClientUtils<MessagePayload> webClient = new WebClientUtils<MessagePayload>(config.getWebHookUrl());
                 postApproval(webClient, event, config);
             }
         }
     }
 
-    private void postApproval(final WebClientUtils webClient, final CommitEvent event, final CollaborationConfigPolicy config) {
+    private void postApproval(final WebClientUtils<MessagePayload> webClient, final CommitEvent event, final CollaborationConfigPolicy config) {
         try {
             final ContentPolicy policy = (ContentPolicy) cmServer.getPolicy(event.getContentId().getContentId());
             final CollaborationData configData = new CollaborationConfig(config).getData(policy);
@@ -145,7 +146,7 @@ public class ContentEventProcessor implements Processor {
                         bean.setContentState(contentState);
                         final MessagePayload message = createMessagePayload(bean, policy, configData);
 
-                        webClient.publish(message);
+                        webClient.post(message);
                     }
                 } else {
                     LOGGER.log(Level.FINE, "content type " + contentType + " is not allowed");
@@ -161,7 +162,7 @@ public class ContentEventProcessor implements Processor {
         return (event.getBeforeVersion() == VersionedContentId.NO_EXISTING_VERSION);
     }
 
-    private void postUpdate(final WebClientUtils webClient, final TagEvent event, final CollaborationConfigPolicy config) throws CMException {
+    private void postUpdate(final WebClientUtils<MessagePayload> webClient, final TagEvent event, final CollaborationConfigPolicy config) throws CMException {
         try {
             final ContentPolicy policy = (ContentPolicy) cmServer.getPolicy(event.getContentId().getContentId());
             final CollaborationData configData = new CollaborationConfig(config).getData(policy);
@@ -173,7 +174,7 @@ public class ContentEventProcessor implements Processor {
                         final ContentBean bean = createContentBean(policy);
                         final MessagePayload message = createMessagePayload(bean, policy, configData);
 
-                        webClient.publish(message);
+                        webClient.post(message);
                     }
                 } else {
                     final String contentType = policy.getInputTemplate().getExternalId().getExternalId();
