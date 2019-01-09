@@ -37,7 +37,7 @@
 
   <properties>
     <polopoly.version>10.18.0</polopoly.version>
-    <baseline.version>4.0.9</baseline.version>
+    <baseline.version>4.0.10</baseline.version>
     <testnext.version>2.1.2</testnext.version>
     <camel.version>2.13.2</camel.version>
   </properties>
