@@ -238,7 +238,7 @@ public class ContentEventProcessor implements Processor {
             if (metadata != null) {
                 final Dimension tagDimension = metadata.getDimensionById("dimension.Tag");
                 if (tagDimension != null && tagDimension.getEntities().size() > 0) {
-                    final List<String> tags = Lists.newArrayList();
+                    final List<String> tags = new ArrayList<>();
                     for (final Entity entity : tagDimension.getEntities()) {
                         tags.add(entity.getName());
                     }
@@ -278,7 +278,7 @@ public class ContentEventProcessor implements Processor {
             if (result != null && result.getStatus().isSuccess()) {
                 final Content<Object> content = result.getContent();
                 if (content != null) {
-                    final Map<String, Object> map = Maps.newHashMap();
+                    final Map<String, Object> map = new HashMap<>();
                     map.put("contentData", content.getContentData());
                     for (final Aspect aspect : content.getAspects()) {
                         if (aspect != null) {

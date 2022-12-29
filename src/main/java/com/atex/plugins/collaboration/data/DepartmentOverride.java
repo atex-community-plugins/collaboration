@@ -11,12 +11,12 @@ import com.polopoly.cm.ContentId;
  * @author mnova
  */
 public class DepartmentOverride {
-    private List<ContentId> departments = Lists.newArrayList();
+    private List<ContentId> departments = new ArrayList<>();
     private boolean enabled;
     private String channel;
     private String username;
     private boolean publishUpdates;
-    private List<String> allowedTypes = Lists.newArrayList();
+    private List<String> allowedTypes = new ArrayList<>();
 
     public List<ContentId> getDepartments() {
         return departments;

@@ -76,7 +76,7 @@ public class CollaborationConfigPolicy extends BaselinePolicy {
     }
 
     public List<String> getAllowedTypes() {
-        final List<String> types = Lists.newArrayList();
+        final List<String> types = new ArrayList<>();
         try {
             final TypeProvider typeProvider = (TypeProvider) getChildPolicy(ALLOWED_TYPES);
 
@@ -90,13 +90,13 @@ public class CollaborationConfigPolicy extends BaselinePolicy {
     }
 
     public List<ContentTypeTemplate> getTemplates() {
-        final List<ContentTypeTemplate> templates = Lists.newArrayList();
+        final List<ContentTypeTemplate> templates = new ArrayList<>();
         try {
             final DuplicatorPolicy dup = (DuplicatorPolicy) getChildPolicy(TEMPLATES);
             final List<DuplicatorElement> list = dup.getDuplicatorElements();
             if (list != null) {
                 for (final DuplicatorElement element : list) {
-                    final List<String> types = Lists.newArrayList();
+                    final List<String> types = new ArrayList<>();
 
                     final TypeProvider typeProvider = (TypeProvider) element.getChildPolicy("contentType");
                     for (final ExternalContentId eid : typeProvider.getTypes()) {
@@ -117,7 +117,7 @@ public class CollaborationConfigPolicy extends BaselinePolicy {
     }
 
     public List<DepartmentOverride> getOverrides() {
-        final List<DepartmentOverride> overrides = Lists.newArrayList();
+        final List<DepartmentOverride> overrides = new ArrayList<>();
         try {
             final DuplicatorPolicy dup = (DuplicatorPolicy) getChildPolicy(OVERRIDES);
             final List<DuplicatorElement> list = dup.getDuplicatorElements();
